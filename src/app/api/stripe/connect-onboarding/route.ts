@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/utils/stripe/server'
+import { getStripe } from '@/utils/stripe/server'
 import { createClient } from '@/utils/supabase/server'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
     const supabase = await createClient()
@@ -20,6 +22,7 @@ export async function POST(req: NextRequest) {
 
         let accountId = profile?.stripe_connect_id
 
+        const stripe = getStripe()
         if (!accountId) {
             // Create new Stripe Connect Express account
             const account = await stripe.accounts.create({

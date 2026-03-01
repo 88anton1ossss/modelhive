@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe, FEE_TIERS, SubscriptionTier } from '@/utils/stripe/server'
+import { getStripe, FEE_TIERS, SubscriptionTier } from '@/utils/stripe/server'
 import { createClient } from '@/utils/supabase/server'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
     const supabase = await createClient()
@@ -27,6 +29,7 @@ export async function POST(req: NextRequest) {
         const fees = FEE_TIERS[tier] ?? FEE_TIERS.free
         const platformFeeAmount = Math.round(product.price * 100 * fees.platform)
 
+        const stripe = getStripe()
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [

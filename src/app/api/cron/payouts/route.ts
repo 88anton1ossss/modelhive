@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/utils/stripe/server'
+import { getStripe } from '@/utils/stripe/server'
 import { createClient } from '@/utils/supabase/server'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
     const authHeader = req.headers.get('authorization')
@@ -27,6 +29,7 @@ export async function POST(req: NextRequest) {
             // or simply mark as paid if Stripe handles it automatically.
             // Here we simulate the payout logic.
 
+            const stripe = getStripe()
             const transfer = await stripe.transfers.create({
                 amount: Math.round(Number(profile.earnings_total) * 100),
                 currency: 'usd',
