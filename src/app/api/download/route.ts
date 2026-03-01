@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
-import { stripe } from '@/utils/stripe/server'
+import { getStripe } from '@/utils/stripe/server'
 import { generateSignedDownloadUrl } from '@/utils/r2/download'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
     const sessionId = req.nextUrl.searchParams.get('session_id')
@@ -10,6 +12,7 @@ export async function GET(req: NextRequest) {
     const supabase = await createClient()
 
     try {
+        const stripe = getStripe()
         // 1. Verify payment with Stripe
         const session = await stripe.checkout.sessions.retrieve(sessionId)
         if (session.payment_status !== 'paid') {
