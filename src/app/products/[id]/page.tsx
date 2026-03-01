@@ -21,12 +21,10 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     const [hasPurchased, setHasPurchased] = useState(false)
     const [selectedTier, setSelectedTier] = useState<Tier | null>(null)
 
-    // Follow state
     const [isFollowing, setIsFollowing] = useState(false)
     const [followerCount, setFollowerCount] = useState(0)
     const [followLoading, setFollowLoading] = useState(false)
 
-    // Review form
     const [rating, setRating] = useState(5)
     const [comment, setComment] = useState("")
     const [submittingReview, setSubmittingReview] = useState(false)
@@ -44,7 +42,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             setProduct(prod)
             setFollowerCount(prod.profiles?.follower_count || 0)
 
-            // Set default tier if tiers exist
             const tiers: Tier[] = prod.metadata?.tiers || []
             if (tiers.length > 0) setSelectedTier(tiers[0])
 
@@ -58,13 +55,12 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             const { data: { user: u } } = await supabase.auth.getUser()
             setUser(u)
             if (u) {
-                const { data: sale } = await supabase.from('sales').select('id').eq('product_id', params.id).eq('buyer_id', u.id).limit(1).maybeSingle()
+                const { data: sale } = await supabase.from('purchases').select('id').eq('product_id', params.id).eq('buyer_id', u.id).limit(1).maybeSingle()
                 setHasPurchased(!!sale)
 
                 const { data: existingReview } = await supabase.from('reviews').select('id').eq('product_id', params.id).eq('reviewer_id', u.id).maybeSingle()
                 if (existingReview) setReviewSubmitted(true)
 
-                // Check follow
                 if (prod.profiles?.id) {
                     const { data: follow } = await supabase.from('follows').select('id').eq('follower_id', u.id).eq('creator_id', prod.profiles.id).maybeSingle()
                     setIsFollowing(!!follow)
@@ -100,12 +96,16 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         try {
             const body: any = { productId: product.id }
             if (selectedTier) body.tier = selectedTier
-            const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+            const res = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            })
             const data = await res.json()
-            if (data.sessionId) {
-                const { loadStripe } = await import('@stripe/stripe-js')
-                const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
-                await stripe?.redirectToCheckout({ sessionId: data.sessionId })
+            if (data.url) {
+                window.location.href = data.url
+            } else if (data.sessionId) {
+                window.location.href = `https://checkout.stripe.com/pay/${data.sessionId}`
             }
         } catch (err) { console.error(err) }
         finally { setBuying(false) }
@@ -132,8 +132,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     const tiers: Tier[] = metadata.tiers || []
     const isPWYW = metadata.pwyw === true
     const displayPrice = selectedTier ? selectedTier.price : product.price
-
-    // Filter out internal metadata keys for display
     const displayMeta = Object.entries(metadata).filter(([k]) => !['tiers', 'pwyw', 'min_price', 'civitai_id'].includes(k))
 
     return (
@@ -143,7 +141,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             </Link>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
-                {/* Left: Gallery (3 cols) */}
                 <div className="lg:col-span-3 space-y-4">
                     <div className="glass-card !p-2 rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center" style={{ background: "rgba(255,255,255,0.02)" }}>
                         {previews[activePreview] ? (
@@ -164,7 +161,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         </div>
                     )}
 
-                    {/* Reviews */}
                     <div id="reviews" className="pt-8 space-y-6">
                         <h2 className="text-xl font-bold">Reviews ({reviews.length})</h2>
                         {reviews.length > 0 ? (
@@ -210,7 +206,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                     </div>
                 </div>
 
-                {/* Right: Purchase sidebar */}
                 <div className="lg:col-span-2">
                     <div className="glass-card sticky top-28 space-y-6">
                         <div>
@@ -218,7 +213,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                             <h1 className="text-2xl font-bold mt-1 leading-snug">{product.title}</h1>
                         </div>
 
-                        {/* Quality + Rating */}
                         <div className="flex items-center gap-3">
                             {product.quality_score > 0 && (
                                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl" style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)" }}>
@@ -238,7 +232,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
                         <p className="text-sm text-white/40 leading-relaxed">{product.description || "No description provided."}</p>
 
-                        {/* Metadata */}
                         {displayMeta.length > 0 && (
                             <div className="space-y-2 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
                                 {displayMeta.map(([key, val]) => (
@@ -250,7 +243,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                             </div>
                         )}
 
-                        {/* Seller + Follow */}
                         <div className="pt-4 space-y-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -280,7 +272,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                             </p>
                         </div>
 
-                        {/* License Tier Selector */}
                         {tiers.length > 0 && (
                             <div className="pt-4 space-y-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
                                 <p className="text-xs font-bold text-white/50 uppercase tracking-widest">Choose License</p>
@@ -300,7 +291,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                             </div>
                         )}
 
-                        {/* Price + Buy */}
                         <div className="space-y-4 pt-6" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
                             <div className="flex justify-between items-end">
                                 <span className="text-white/30 text-sm">
