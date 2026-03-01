@@ -19,6 +19,9 @@
 - 🔄 **Civitai Import** — Migrate your entire Civitai profile in one click
 - 🔞 **NSFW Age Gate** — Controlled adult content with age verification
 - 📊 **Subscription Tiers** — Free (25% fee) / Pro $19 (15%) / Studio $49 (10%)
+- 💝 **Pay What You Want** — Flexible pricing with minimum price floor
+- 👥 **Follow Creators** — Subscribe to creators for new release notifications
+- 🏷️ **License Tiers** — Personal / Commercial / Extended license options
 
 ---
 
@@ -26,12 +29,12 @@
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | Next.js 14 (App Router), Tailwind CSS, Framer Motion |
+| Frontend | Next.js 15 (App Router), Tailwind CSS, Framer Motion |
 | Auth | Supabase (Email + Google OAuth) |
 | Database | Supabase (PostgreSQL + RLS) |
 | File Storage | Cloudflare R2 (public previews + private master files) |
 | Payments | Stripe Connect (automatic splits) |
-| AI Scoring | OpenAI Vision API (GPT-4V) |
+| AI Scoring | OpenAI Vision API (GPT-4o) |
 | Image Processing | Sharp (watermarking + resizing) |
 
 ---
@@ -41,7 +44,7 @@
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/anton1os/modelhive.git
+git clone https://github.com/88anton1ossss/modelhive.git
 cd modelhive
 npm install
 ```
@@ -55,16 +58,11 @@ cp .env.example .env.local
 
 ### 3. Run the database migrations
 
-In your Supabase dashboard → SQL Editor, run:
-- `supabase/schema.sql` — Main tables + RLS policies
-- `supabase/rpc.sql` — Stored procedures
-- `supabase/subscriptions.sql` — Subscription tier support
+In your Supabase dashboard → SQL Editor, run all SQL from the main schema block.
 
 ### 4. Run the development server
 
 ```bash
-# Requires Node.js v20+
-nvm use 20
 npm run dev
 ```
 
@@ -80,24 +78,21 @@ See [`.env.example`](./.env.example) for all required variables.
 |----------|-------------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key |
 | `STRIPE_SECRET_KEY` | Stripe secret key |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+| `STRIPE_PLATFORM_FEE_PERCENT` | Platform fee % (default: 25) |
 | `R2_ACCOUNT_ID` | Cloudflare account ID |
 | `R2_ACCESS_KEY_ID` | R2 access key |
 | `R2_SECRET_ACCESS_KEY` | R2 secret key |
+| `R2_BUCKET_PUBLIC` | Public bucket name |
+| `R2_BUCKET_PRIVATE` | Private bucket name |
+| `R2_PUBLIC_URL` | Public R2 URL |
 | `OPENAI_API_KEY` | OpenAI API key |
-
----
-
-## SEO Pages
-
-- `/civitai-alternative` — Why creators switch from Civitai
-- `/lora-marketplace` — Browse by base model (Flux, SDXL, etc.)
-- `/photo-dataset-marketplace` — AI training photo sets
-- `/earn-from-ai-models` — Creator income calculator
+| `NEXT_PUBLIC_APP_URL` | Your app URL |
 
 ---
 
 ## License
 
-MIT © ModelHive
+MIT © ModelHive 2026
