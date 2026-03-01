@@ -1,6 +1,6 @@
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { r2Client, PUBLIC_BUCKET, PRIVATE_BUCKET } from './client'
+import { PUBLIC_BUCKET, PRIVATE_BUCKET, getR2Client } from './client'
 import sharp from 'sharp'
 
 export async function uploadToR2(
@@ -9,8 +9,9 @@ export async function uploadToR2(
     isPublic: boolean = false
 ) {
     const bucket = isPublic ? PUBLIC_BUCKET : PRIVATE_BUCKET
+    const client = getR2Client()
 
-    await r2Client.send(
+    await client.send(
         new PutObjectCommand({
             Bucket: bucket,
             Key: key,
