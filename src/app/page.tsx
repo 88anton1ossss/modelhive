@@ -178,7 +178,7 @@ function ProductCard({ product }: { product: any }) {
       {/* Thumbnail */}
       <div className="relative aspect-[4/3] overflow-hidden" style={{ background: "rgba(255,255,255,0.03)" }}>
         {product.preview_urls?.[0] ? (
-          <img src={product.preview_urls[0]} alt={product.title}
+          <img src={product.preview_urls[0]} alt={product.title} loading="lazy" width={400} height={300}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white/10">
