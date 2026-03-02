@@ -18,7 +18,9 @@ import {
     Share2,
     DownloadCloud,
     ChevronRight,
-    Filter
+    Filter,
+    ShieldCheck,
+    Sparkles
 } from "lucide-react"
 import Link from "next/link"
 import { WorkspaceInspector } from "@/components/layout/WorkspaceInspector"
