@@ -1,223 +1,225 @@
 import { createClient } from "@/utils/supabase/server"
-import { ArrowRight, Zap, Shield, Sparkles, TrendingUp, Clock, Star, Filter, ChevronDown } from "lucide-react"
+import { ArrowRight, Zap, Sparkles, TrendingUp, Cpu, Image as ImageIcon, CheckCircle2, Trophy, Globe, Lock } from "lucide-react"
 import Link from "next/link"
+import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid"
 
-const CATEGORIES = ['All', 'AI Model', 'Photo Dataset', 'Preset', 'Prompt']
-const BASE_MODELS = ['All', 'Flux', 'SDXL', 'SD3.5', 'Pony', 'Other']
-
-export default async function Home({ searchParams }: { searchParams: { tab?: string; category?: string; base_model?: string } }) {
+export default async function Home() {
   const supabase = await createClient()
-  const tab = searchParams.tab || 'latest'
 
-  let query = supabase.from('products').select('*, profiles(full_name)').eq('status', 'active').limit(24)
-
-  if (searchParams.category && searchParams.category !== 'all') {
-    query = query.eq('category', searchParams.category)
-  }
-  if (searchParams.base_model && searchParams.base_model !== 'all') {
-    query = query.contains('metadata', { base_model: searchParams.base_model })
-  }
-
-  if (tab === 'trending') query = query.order('review_count', { ascending: false })
-  else if (tab === 'top_rated') query = query.order('avg_rating', { ascending: false })
-  else query = query.order('created_at', { ascending: false })
-
-  const { data: products } = await query
+  // Fetch a few featured products for the bento highlights
+  const { data: featuredProducts } = await supabase
+    .from('products')
+    .select('*, profiles(full_name)')
+    .eq('status', 'active')
+    .order('quality_score', { ascending: false })
+    .limit(4)
 
   return (
-    <div className="min-h-screen">
-      {/* Hero */}
-      <section className="relative flex flex-col items-center text-center py-28 px-6 overflow-hidden">
-        <div className="absolute inset-0 -z-10"
-          style={{ background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(99,102,241,0.12) 0%, transparent 70%)" }} />
+    <div className="flex flex-col gap-24 pb-32 overflow-hidden">
+      {/* 1. Hero / Introduction */}
+      <section className="relative pt-24 pb-12 px-6 flex flex-col items-center text-center">
+        <div className="absolute top-0 inset-x-0 h-[500px] -z-10 canvas-dot-bg opacity-50" />
+        <div className="absolute top-0 inset-x-0 h-[500px] -z-10 bg-gradient-to-b from-indigo-500/10 via-transparent to-transparent" />
 
-        {/* Civitai Migration Banner */}
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold mb-8 cursor-pointer hover:opacity-90 transition-opacity"
-          style={{ background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.25)", color: "#a5b4fc" }}>
-          <Zap className="w-3.5 h-3.5" />
-          <span>Earn <span className="text-white font-bold">75%</span> here vs <span className="line-through opacity-60">0%</span> on Civitai</span>
-          <span className="ml-1 px-2 py-0.5 bg-indigo-500 text-white text-[10px] rounded-full">Switch Now →</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 text-[10px] uppercase tracking-widest font-bold text-white/40 mb-8 animate-fade-in">
+          <Sparkles className="w-3 h-3 text-indigo-400" />
+          <span>The Elite Workspace for AI Creators</span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 max-w-4xl leading-[1.08]">
-          The Creator Marketplace
-          <br />
-          <span className="indigo-gradient">for AI Models & Data</span>
+        <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-8 leading-[0.9] max-w-5xl">
+          The Hub for <span className="indigo-gradient">Models</span> <br className="hidden md:block" />
+          & Digital Assets
         </h1>
 
-        <p className="text-white/40 text-lg md:text-xl max-w-2xl mb-12 leading-relaxed">
-          Sell LoRAs, photo datasets, presets, and prompts. Keep <strong className="text-white">75–90%</strong> of every sale. Weekly payouts. AI quality verified.
+        <p className="text-lg md:text-xl text-white/40 max-w-2xl mb-12 leading-relaxed">
+          ModelHive is the workspace where high-end AI creators host, monetize, and scale their work. Keep <strong className="text-white">75–90%</strong> of every sale.
         </p>
 
-        <div className="flex flex-col md:flex-row gap-4 mb-20">
-          <Link href="/sell" className="accent-button text-base px-8 py-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Link href="/sell" className="accent-button text-base px-10 py-5">
             Start Selling Free
             <ArrowRight className="ml-2 w-5 h-5" />
           </Link>
-          <Link href="/marketplace" className="px-8 py-4 rounded-xl font-medium text-white/70 hover:text-white hover:bg-white/5 border transition-all"
-            style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-            Browse Marketplace
+          <Link href="/marketplace" className="px-10 py-5 rounded-2xl font-bold bg-white/[0.03] border border-white/5 hover:bg-white/5 transition-all">
+            Explore Marketplace
           </Link>
         </div>
-
-        {/* Trust numbers */}
-        <div className="flex gap-12 text-center">
-          {[
-            { num: "10K+", label: "Creators" },
-            { num: "75–90%", label: "Royalty Rate" },
-            { num: "$1.2M+", label: "Creator Earnings" },
-          ].map(stat => (
-            <div key={stat.label}>
-              <div className="text-2xl font-black indigo-gradient">{stat.num}</div>
-              <div className="text-xs text-white/30 uppercase tracking-widest mt-1">{stat.label}</div>
-            </div>
-          ))}
-        </div>
       </section>
 
-      {/* Community Feed */}
-      <section className="max-w-7xl mx-auto px-6 pb-24">
-        <div className="flex flex-col md:flex-row md:items-center gap-6 mb-8">
-          {/* Tabs */}
-          <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
-            {[
-              { id: 'latest', label: 'Latest', icon: <Clock className="w-4 h-4" /> },
-              { id: 'trending', label: 'Trending', icon: <TrendingUp className="w-4 h-4" /> },
-              { id: 'top_rated', label: 'Top Rated', icon: <Star className="w-4 h-4" /> },
-            ].map(t => (
-              <Link key={t.id} href={`/?tab=${t.id}`}
-                className={`flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === t.id ? 'text-white' : 'text-white/40 hover:text-white/70'}`}
-                style={tab === t.id ? { background: "#6366f1", boxShadow: "0 0 16px rgba(99,102,241,0.3)" } : {}}>
-                {t.icon}{t.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* Category pills */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {CATEGORIES.map(cat => {
-              const val = cat.toLowerCase().replace(' ', '_')
-              const isActive = (searchParams.category || 'all') === val
-              return (
-                <Link key={cat} href={`/?tab=${tab}&category=${val}`}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${isActive ? 'text-indigo-300 border-indigo-500/40 bg-indigo-500/10' : 'text-white/40 border-white/8 hover:text-white/60 hover:border-white/15'}`}>
-                  {cat}
-                </Link>
-              )
-            })}
-          </div>
-
-          {/* Base model filter */}
-          <div className="ml-auto flex items-center gap-2 text-sm text-white/40 cursor-pointer hover:text-white/70 transition-colors">
-            <Filter className="w-4 h-4" />
-            <span>Model:</span>
-            <select defaultValue={searchParams.base_model || 'All'}
-              className="bg-transparent border-none outline-none text-white/60 cursor-pointer text-sm">
-              {BASE_MODELS.map(m => <option key={m} value={m.toLowerCase()} className="bg-neutral-900">{m}</option>)}
-            </select>
-            <ChevronDown className="w-3 h-3" />
-          </div>
-        </div>
-
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {products && products.length > 0 ? products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          )) : (
-            <div className="col-span-4 text-center py-32 text-white/20">
-              <Sparkles className="w-12 h-12 mx-auto mb-4 opacity-30" />
-              <p className="text-lg font-medium">The hive is waiting for its first models.</p>
-              <Link href="/sell" className="accent-button mt-6 text-sm">List Your First Asset</Link>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Civitai Migration CTA */}
-      <section className="max-w-7xl mx-auto px-6 pb-24">
-        <div className="glass-card !p-0 overflow-hidden grid grid-cols-1 md:grid-cols-2">
-          <div className="p-12 flex flex-col justify-center">
-            <div className="score-badge mb-6 w-fit text-[10px]">Migration Special</div>
-            <h2 className="text-3xl font-extrabold mb-4">Coming from Civitai?</h2>
-            <p className="text-white/40 mb-8 leading-relaxed">
-              Import your entire Civitai profile in 30 seconds. We auto-fill all your metadata, model descriptions, and tags. Start earning on your existing work immediately.
-            </p>
-            <Link href="/sell?import=civitai" className="accent-button w-fit">
-              Import from Civitai
-              <ArrowRight className="ml-2 w-4 h-4" />
-            </Link>
-          </div>
-          <div className="p-12 flex flex-col gap-4 justify-center"
-            style={{ background: "rgba(99,102,241,0.04)", borderLeft: "1px solid rgba(99,102,241,0.1)" }}>
-            {[
-              { platform: "Civitai", pct: "0%", note: "Donates revenue to Civitai" },
-              { platform: "ModelHive Free", pct: "75%", note: "No setup required" },
-              { platform: "ModelHive Pro", pct: "85%", note: "$19/mo, unlimited uploads" },
-              { platform: "ModelHive Studio", pct: "90%", note: "$49/mo, team features" },
-            ].map((row, i) => (
-              <div key={row.platform} className="flex items-center justify-between gap-4 py-3"
-                style={{ borderBottom: i < 3 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                <span className="text-sm font-medium" style={{ color: i === 0 ? "rgba(255,255,255,0.3)" : "white" }}>{row.platform}</span>
-                <div className="flex-1 h-1.5 rounded-full mx-4 overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
-                  <div className="h-full rounded-full" style={{ width: row.pct === "0%" ? "2%" : row.pct, background: i === 0 ? "rgba(255,80,80,0.4)" : "#6366f1" }} />
+      {/* 2. Bento Grid */}
+      <section className="px-6">
+        <BentoGrid>
+          {/* Main Block: Trending */}
+          <BentoCard className="md:col-span-4 lg:col-span-4 min-h-[400px]">
+            <div className="p-8 h-full flex flex-col">
+              <div className="flex justify-between items-start mb-8">
+                <div>
+                  <h3 className="text-2xl font-bold mb-2">Top Earning This Week</h3>
+                  <p className="text-xs text-white/30 uppercase tracking-widest font-black">Creator Spotlights</p>
                 </div>
-                <span className={`font-black text-sm ${i === 0 ? "text-red-400" : "text-indigo-400"}`}>{row.pct}</span>
+                <Trophy className="w-6 h-6 text-yellow-500" />
               </div>
-            ))}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+                {featuredProducts?.slice(0, 2).map((p, i) => (
+                  <div key={p.id} className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col gap-4 group/item hover:bg-indigo-500/5 transition-all">
+                    <div className="aspect-video rounded-xl bg-white/5 overflow-hidden">
+                      <img src={p.preview_urls?.[0]} className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-700" alt="" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm mb-1">{p.title}</h4>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] text-white/30">{p.profiles?.full_name}</span>
+                        <span className="text-xs font-black text-indigo-400">$2.4k+ earned</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </BentoCard>
+
+          {/* Block: Civitai Import */}
+          <BentoCard className="md:col-span-2 lg:col-span-2 bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border-indigo-500/20">
+            <div className="p-8 h-full flex flex-col justify-center items-center text-center">
+              <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center mb-6 shadow-2xl">
+                <DownloadCloud className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-black mb-4">Coming from Civitai?</h3>
+              <p className="text-sm text-white/60 mb-8 leading-relaxed">
+                Import your entire portfolio in one click. We auto-fill everything.
+              </p>
+              <Link href="/sell?import=civitai" className="w-full py-4 rounded-xl font-bold bg-white text-black hover:bg-white/90 transition-all text-sm">
+                Switch Now
+              </Link>
+            </div>
+          </BentoCard>
+
+          {/* Block: Photographers */}
+          <BentoCard className="md:col-span-2 lg:col-span-2">
+            <div className="p-8 h-full flex flex-col">
+              <ImageIcon className="w-6 h-6 text-blue-400 mb-6" />
+              <h3 className="text-lg font-bold mb-2 leading-tight">For Photographers</h3>
+              <p className="text-xs text-white/40 leading-relaxed">
+                License your high-res datasets for AI training. Secure, private storage + automatic watermarking.
+              </p>
+              <div className="mt-auto pt-6 flex gap-2">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20" />
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20" />
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20" />
+              </div>
+            </div>
+          </BentoCard>
+
+          {/* Block: AI Artists */}
+          <BentoCard className="md:col-span-2 lg:col-span-2">
+            <div className="p-8 h-full flex flex-col">
+              <Cpu className="w-6 h-6 text-purple-400 mb-6" />
+              <h3 className="text-lg font-bold mb-2 leading-tight">For AI Artists</h3>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Sell your fine-tuned LoRAs and Checkpoints. Version control, prompt guides, and usage tips built-in.
+              </p>
+              <div className="mt-auto pt-6 flex -space-x-2">
+                <div className="w-8 h-8 rounded-full bg-purple-500/20 border border-black" />
+                <div className="w-8 h-8 rounded-full bg-indigo-500/20 border border-black" />
+                <div className="w-8 h-8 rounded-full bg-violet-500/20 border border-black" />
+              </div>
+            </div>
+          </BentoCard>
+
+          {/* Block: Why Us */}
+          <BentoCard className="md:col-span-2 lg:col-span-2 border-white/10">
+            <div className="p-8 h-full flex flex-col">
+              <h3 className="text-lg font-bold mb-4">Why ModelHive?</h3>
+              <div className="space-y-4">
+                {[
+                  { icon: Lock, text: "Private R2 Master Files" },
+                  { icon: Globe, text: "Global Edge SEO" },
+                  { icon: CheckCircle2, text: "AI Quality Verified" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <item.icon className="w-3.5 h-3.5 text-indigo-400" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </BentoCard>
+        </BentoGrid>
+      </section>
+
+      {/* 3. Global Social Proof / Stats */}
+      <section className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center pt-12">
+        {[
+          { label: "Total Volume", value: "$4.2M+" },
+          { label: "Active Creators", value: "12,400" },
+          { label: "Average Royalty", value: "85%" },
+          { label: "Assets Verified", value: "82K" },
+        ].map(stat => (
+          <div key={stat.label}>
+            <div className="text-3xl font-black mb-1">{stat.value}</div>
+            <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-white/20">{stat.label}</div>
+          </div>
+        ))}
+      </section>
+
+      {/* 4. Comparison Table (Compact) */}
+      <section className="max-w-4xl mx-auto px-6">
+        <div className="glass-card flex flex-col gap-8 p-10">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2">Fair Monetization</h2>
+            <p className="text-sm text-white/30">Why creators are choosing ModelHive over Civitai.</p>
+          </div>
+
+          <div className="space-y-4">
+            <ComparisonRow label="Base Royalty" hive="75–90%" civ="0%" positive />
+            <ComparisonRow label="Master File Security" hive="Private Storage" civ="Public Access" positive />
+            <ComparisonRow label="Payout Frequency" hive="Weekly" civ="N/A" positive />
+            <ComparisonRow label="SEO Optimization" hive="Enterprise" civ="Limited" positive />
           </div>
         </div>
+      </section>
+
+      {/* 5. CTA Section */}
+      <section className="py-24 px-6 text-center bg-indigo-500/5 border-y border-white/5 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-500/10 to-transparent" />
+        <h2 className="text-4xl md:text-5xl font-black mb-8 relative">Ready to own your work?</h2>
+        <Link href="/sell" className="accent-button text-lg px-12 py-6 relative">
+          Start Your Hive Now
+        </Link>
       </section>
     </div>
   )
 }
 
-function ProductCard({ product }: { product: any }) {
-  const metadata = product.metadata || {}
+function ComparisonRow({ label, hive, civ, positive }: any) {
   return (
-    <Link href={`/products/${product.id}`} className="group glass-card !p-0 overflow-hidden flex flex-col">
-      {/* Thumbnail */}
-      <div className="relative aspect-[4/3] overflow-hidden" style={{ background: "rgba(255,255,255,0.03)" }}>
-        {product.preview_urls?.[0] ? (
-          <img src={product.preview_urls[0]} alt={product.title} loading="lazy" width={400} height={300}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-white/10">
-            <Sparkles className="w-12 h-12" />
-          </div>
-        )}
-        {/* Badges */}
-        <div className="absolute top-2 left-2 flex gap-1.5">
-          {metadata.base_model && (
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/60 backdrop-blur text-indigo-300 border border-indigo-500/20">
-              {metadata.base_model}
-            </span>
-          )}
-        </div>
-        <div className="absolute top-2 right-2 flex flex-col gap-1.5">
-          {product.quality_score > 0 && (
-            <span className="score-badge !text-[10px]">AI {product.quality_score}</span>
-          )}
-          {product.avg_rating > 0 && (
-            <span className="score-badge !text-[10px]">
-              <Star className="w-2.5 h-2.5 fill-current" />{product.avg_rating}
-            </span>
-          )}
-        </div>
+    <div className="flex items-center justify-between py-4 border-b border-white/5 last:border-0 hover:bg-white/[0.01] transition-colors px-4 rounded-lg">
+      <span className="text-xs font-bold text-white/50">{label}</span>
+      <div className="flex gap-12 text-sm font-black">
+        <span className="text-indigo-400 min-w-[120px] text-right">{hive}</span>
+        <span className="text-white/20 min-w-[120px] text-right">{civ}</span>
       </div>
+    </div>
+  )
+}
 
-      {/* Info */}
-      <div className="p-4 flex flex-col flex-grow">
-        <p className="text-[10px] uppercase tracking-widest mb-1" style={{ color: "#6366f1" }}>
-          {product.category?.replace('_', ' ')}
-        </p>
-        <h3 className="font-bold mb-1 leading-snug group-hover:text-indigo-300 transition-colors line-clamp-2">{product.title}</h3>
-        <p className="text-[10px] text-white/30 mt-1">{product.profiles?.full_name || 'Anonymous'}</p>
-
-        <div className="mt-auto pt-4 flex justify-between items-center" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-          <span className="text-xl font-black">${product.price}</span>
-          <span className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors">View →</span>
-        </div>
-      </div>
-    </Link>
+function DownloadCloud(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24" height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+      <path d="M12 12v9" />
+      <path d="m8 17 4 4 4-4" />
+    </svg>
   )
 }

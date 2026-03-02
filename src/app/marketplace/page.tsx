@@ -1,26 +1,34 @@
 import { createClient } from "@/utils/supabase/server"
-import { Star, ArrowUpRight, ShieldCheck, Zap } from "lucide-react"
+import { Filter, Search, Grid, List, SlidersHorizontal, Sparkles, SortDesc } from "lucide-react"
 import Link from "next/link"
+import { ProductCard } from "@/components/product/ProductCard"
+import { cn } from "@/utils/cn"
 
 export default async function MarketplacePage({
     searchParams,
 }: {
-    searchParams: { sort?: string; category?: string }
+    searchParams: { sort?: string; category?: string; base_model?: string }
 }) {
     const supabase = await createClient()
 
     let query = supabase
         .from('products')
-        .select('*, profiles(full_name)')
+        .select('*, seller_profile:profiles(full_name, avatar_url)')
         .eq('status', 'active')
 
-    if (searchParams.category) {
+    if (searchParams.category && searchParams.category !== 'all') {
         query = query.eq('category', searchParams.category)
     }
 
-    // Sort by Quality Score or Rating
+    if (searchParams.base_model && searchParams.base_model !== 'all') {
+        query = query.contains('metadata', { base_model: searchParams.base_model })
+    }
+
+    // Sort logic
     if (searchParams.sort === 'top_rated') {
         query = query.order('avg_rating', { ascending: false })
+    } else if (searchParams.sort === 'newest') {
+        query = query.order('created_at', { ascending: false })
     } else {
         query = query.order('quality_score', { ascending: false })
     }
@@ -28,71 +36,90 @@ export default async function MarketplacePage({
     const { data: products } = await query
 
     return (
-        <div className="min-h-screen py-12 px-6 max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-                <div>
-                    <h1 className="text-4xl font-extrabold mb-2 tracking-tight">The <span className="gold-gradient">Vault</span> Feed</h1>
-                    <p className="text-white/40">Exclusive digital assets verified by PixelVault AI.</p>
-                </div>
-
-                <div className="flex gap-4">
-                    <select className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm outline-none focus:border-yellow-500 transition-all">
-                        <option value="quality">Sort: High Quality</option>
-                        <option value="top_rated">Sort: Top Rated</option>
-                        <option value="newest">Sort: Newest</option>
-                    </select>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {products?.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                ))}
-            </div>
-        </div>
-    )
-}
-
-function ProductCard({ product }: { product: any }) {
-    return (
-        <div className="group glass-card overflow-hidden flex flex-col hover:border-yellow-500/30 transition-all duration-300">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-xl mb-4">
-                <img
-                    src={product.preview_urls[0]}
-                    alt={product.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-2 right-2 flex gap-1.5">
-                    <div className="bg-black/60 backdrop-blur-md border border-white/10 px-2 py-1 rounded-lg flex items-center gap-1">
-                        <ShieldCheck className="w-3 h-3 text-yellow-400" />
-                        <span className="text-[10px] font-bold text-yellow-400">{product.quality_score}</span>
+        <div className="flex flex-col gap-12">
+            {/* Header / Intro */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+                <div className="flex-1">
+                    <div className="flex items-center gap-2 text-indigo-400 mb-4 animate-in fade-in slide-in-from-left-4 duration-700">
+                        <Grid className="w-4 h-4" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.25em]">Asset Exchange</span>
                     </div>
-                    {product.avg_rating > 0 && (
-                        <div className="bg-black/60 backdrop-blur-md border border-white/10 px-2 py-1 rounded-lg flex items-center gap-1">
-                            <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                            <span className="text-[10px] font-bold text-white">{product.avg_rating}</span>
+                    <h1 className="text-5xl font-black tracking-tighter mb-4 animate-in fade-in slide-in-from-left-6 duration-1000">
+                        The AI <span className="indigo-gradient">Creator</span> Marketplace
+                    </h1>
+                    <p className="text-sm text-white/30 max-w-xl leading-loose font-medium">
+                        Secure high-performance models and curated datasets for your creative studio.
+                        Every asset is verified for quality and integrity.
+                    </p>
+                </div>
+
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1 p-1 rounded-2xl bg-white/[0.03] border border-white/5">
+                        <button className="px-4 py-2 rounded-xl bg-indigo-500/10 text-indigo-400 group flex items-center gap-2 transition-all">
+                            <Grid className="w-4 h-4" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Grid</span>
+                        </button>
+                        <button className="px-4 py-2 rounded-xl hover:bg-white/5 text-white/30 transition-all flex items-center gap-2 group">
+                            <List className="w-4 h-4 opacity-50 group-hover:opacity-100" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">List</span>
+                        </button>
+                    </div>
+
+                    <button className="flex lg:hidden items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/5 text-white/40 hover:text-white transition-all">
+                        <SlidersHorizontal className="w-4 h-4" />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Filters</span>
+                    </button>
+                </div>
+            </div>
+
+            {/* Sub-header Filter Shortcuts */}
+            <div className="flex flex-wrap items-center gap-3">
+                {['All Assets', 'Checkpoints', 'LoRAs', 'Datasets', 'Textual Inversions'].map((label, idx) => (
+                    <button
+                        key={label}
+                        className={cn(
+                            "px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all",
+                            idx === 0
+                                ? "bg-white text-black border-white"
+                                : "bg-white/5 border-white/5 text-white/40 hover:border-white/20 hover:text-white"
+                        )}
+                    >
+                        {label}
+                    </button>
+                ))}
+                <div className="h-4 w-px bg-white/5 mx-2" />
+                <button className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/5 bg-white/[0.02] text-white/30 hover:text-white transition-all">
+                    <SortDesc className="w-3 h-3" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Popular First</span>
+                </button>
+            </div>
+
+            {/* Results Grid - Responsive Columns */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
+                {products && products.length > 0 ? products.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                )) : (
+                    <div className="col-span-full py-48 flex flex-col items-center text-center canvas-dot-bg border border-dashed border-white/10 rounded-3xl">
+                        <div className="w-20 h-20 rounded-full bg-indigo-500/5 flex items-center justify-center border border-indigo-500/10 mb-8 shadow-2xl">
+                            <Sparkles className="w-10 h-10 text-indigo-500/40" />
                         </div>
-                    )}
-                </div>
+                        <h2 className="text-2xl font-black mb-3">The hive is quiet</h2>
+                        <p className="text-sm text-white/30 max-w-xs leading-relaxed font-medium">
+                            No assets match your current selection. Try broadening your criteria or search across all categories.
+                        </p>
+                        <Link href="/marketplace" className="accent-button mt-8 !px-10 !py-4 text-[11px] uppercase tracking-widest font-black">
+                            Clear Active Filters
+                        </Link>
+                    </div>
+                )}
             </div>
 
-            <div className="flex-grow">
-                <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-lg group-hover:text-yellow-400 transition-colors line-clamp-1">{product.title}</h3>
-                </div>
-                <p className="text-xs text-white/40 mb-4 line-clamp-2">{product.description || `Premium ${product.category.replace('_', ' ')}`}</p>
-
-                <div className="flex items-center gap-2 mb-6">
-                    <div className="w-5 h-5 rounded-full bg-white/10" />
-                    <span className="text-[10px] text-white/50">{product.profiles?.full_name || 'Anonymous Seller'}</span>
-                </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                <span className="text-xl font-black text-white">${product.price}</span>
-                <button className="gold-button !py-1.5 !px-3 text-[10px] uppercase flex items-center gap-1 group/btn">
-                    View Detail
-                    <ArrowUpRight className="w-3 h-3 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+            {/* Loading / Pagination */}
+            <div className="mt-16 flex justify-center pb-24">
+                <button className="flex items-center gap-4 px-10 py-5 rounded-2xl bg-white/[0.03] border border-white/5 text-[11px] font-black uppercase tracking-[0.2em] text-white/30 hover:bg-white/5 hover:text-white hover:border-white/10 transition-all group">
+                    <span>Sync with Server</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-indigo-500 transition-colors" />
+                    <span>Load More Assets</span>
                 </button>
             </div>
         </div>
