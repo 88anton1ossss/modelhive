@@ -38,9 +38,13 @@ export async function updateSession(request: NextRequest) {
     if (
         !user &&
         !request.nextUrl.pathname.startsWith('/login') &&
+        !request.nextUrl.pathname.startsWith('/signup') &&
         !request.nextUrl.pathname.startsWith('/auth') &&
         !request.nextUrl.pathname.startsWith('/api/webhooks') &&
+        !request.nextUrl.pathname.startsWith('/api/download') &&
         !request.nextUrl.pathname.startsWith('/marketplace') &&
+        !request.nextUrl.pathname.startsWith('/products') &&
+        !request.nextUrl.pathname.startsWith('/u') &&
         !request.nextUrl.pathname.startsWith('/civitai-alternative') &&
         !request.nextUrl.pathname.startsWith('/lora-marketplace') &&
         !request.nextUrl.pathname.startsWith('/photo-dataset-marketplace') &&
