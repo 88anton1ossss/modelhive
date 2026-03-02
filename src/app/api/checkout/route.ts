@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const { productId } = await req.json()
+        const { productId, licenseType = 'personal' } = await req.json()
 
         // Fetch product details + seller profile (for Stripe Connect ID and subscription tier)
         const { data: product, error } = await supabase
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
                         product_data: {
                             name: product.title,
                             images: product.preview_urls?.slice(0, 1) ?? [],
-                            metadata: { category: product.category },
+                            metadata: { category: product.category, license: licenseType },
                         },
                         unit_amount: Math.round(product.price * 100),
                     },
@@ -56,12 +56,13 @@ export async function POST(req: NextRequest) {
                 },
             },
             metadata: {
-                productId: product.id,
-                buyerId: user.id,
-                sellerId: product.seller_id,
-                sellerTier: tier,
-                platformFee: platformFeeAmount.toString(),
-                sellerShare: Math.round(product.price * 100 * fees.seller).toString(),
+                product_id: product.id,
+                license_type: licenseType,
+                seller_id: product.seller_id,
+                buyer_id: user.id,
+                seller_tier: tier,
+                platform_fee_amount: platformFeeAmount.toString(),
+                seller_share_amount: Math.round(product.price * 100 * fees.seller).toString(),
             },
         })
 
