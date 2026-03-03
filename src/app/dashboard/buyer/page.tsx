@@ -93,54 +93,57 @@ export default function BuyerDashboardPage() {
                                         <Package className="w-10 h-10" />
                                     </div>
                                 )}
-                                <div className="absolute top-3 right-3">
-                                    <div className="bg-black/60 backdrop-blur-xl border border-white/10 px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest text-white/60">
-                                        Purchased
+                                <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
+                                    <div className="bg-green-500/80 backdrop-blur-xl border border-white/10 px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest text-white">
+                                        Owner
+                                    </div>
+                                    <div className="bg-black/40 backdrop-blur-xl border border-white/10 px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest text-white/60">
+                                        {product.product_type || product.category}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Card Content */}
-                            <div className="p-5 flex flex-col flex-1">
-                                <div className="flex justify-between items-start mb-4">
+                            <div className="p-6 flex flex-col flex-1">
+                                <div className="flex justify-between items-start mb-6">
                                     <div>
-                                        <h3 className="font-bold text-sm text-white group-hover:text-indigo-400 transition-colors mb-1 truncate">{product.title}</h3>
-                                        <p className="text-[10px] text-white/30 uppercase tracking-widest font-black leading-none">{product.category}</p>
+                                        <h3 className="font-bold text-sm text-white group-hover:text-indigo-400 transition-colors mb-1 truncate uppercase tracking-tight">{product.title}</h3>
+                                        <p className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-black leading-none">{product.category} &bull; v1.0</p>
                                     </div>
-                                    {product.quality_score > 0 && (
-                                        <div className="text-[10px] font-black text-indigo-400/50">
-                                            QS {product.quality_score}
-                                        </div>
-                                    )}
+                                    <div className="w-8 h-8 rounded-lg bg-white/[0.03] border border-white/5 flex items-center justify-center">
+                                        <Star className="w-3.5 h-3.5 text-indigo-400/50" />
+                                    </div>
                                 </div>
 
-                                <div className="mt-auto pt-5 border-t border-white/5 flex items-center gap-3">
+                                <div className="mt-auto pt-6 border-t border-white/5 flex items-center gap-3">
                                     <a
                                         href={`/api/download?session_id=${sale.stripe_session_id}`}
                                         target="_blank"
                                         rel="noopener"
-                                        className="flex-1 py-3 rounded-xl bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-widest text-center hover:bg-white text-black transition-all flex items-center justify-center gap-2 group/btn"
+                                        className="flex-1 py-4 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-widest text-center hover:bg-indigo-400 hover:text-white transition-all flex items-center justify-center gap-2 group/btn shadow-xl"
                                     >
                                         <Download className="w-3.5 h-3.5 group-hover/btn:translate-y-0.5 transition-transform" />
-                                        Download
+                                        Access Files
                                     </a>
 
                                     <Link
                                         href={`/products/${product.id}#reviews`}
-                                        className={`px-4 py-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${hasReviewed ? 'border-indigo-500/10 bg-indigo-500/10 text-indigo-400 opacity-60' : 'border-white/10 hover:border-white/30 text-white/40'}`}
+                                        className={`px-5 py-4 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${hasReviewed ? 'border-indigo-500/10 bg-indigo-500/10 text-indigo-400 opacity-60' : 'border-white/10 hover:border-white/30 text-white/40'}`}
                                     >
-                                        {hasReviewed ? <Star className="w-3.5 h-3.5 fill-current" /> : "Review"}
+                                        {hasReviewed ? "Rated" : "Review"}
                                     </Link>
                                 </div>
                             </div>
                         </div>
                     )
                 }) : (
-                    <div className="col-span-full py-32 flex flex-col items-center text-center">
-                        <ShoppingBag className="w-16 h-16 text-white/5 mb-6" />
-                        <h3 className="text-lg font-bold mb-2">Your library is empty</h3>
-                        <p className="text-sm text-white/20 max-w-xs mb-8">Start your AI creation journey by exploring the marketplace.</p>
-                        <Link href="/marketplace" className="accent-button !py-3 !px-10 text-xs font-black uppercase tracking-widest">Browse Hive</Link>
+                    <div className="col-span-full py-40 flex flex-col items-center text-center">
+                        <div className="w-20 h-20 rounded-3xl bg-white/[0.02] border border-white/5 flex items-center justify-center mb-8">
+                            <ShoppingBag className="w-10 h-10 text-white/5" />
+                        </div>
+                        <h3 className="text-xl font-black mb-3 text-white/40 uppercase tracking-[0.2em]">Library Empty</h3>
+                        <p className="text-sm text-white/10 max-w-xs mb-10 font-medium">Discover premium LoRAs, Datasets, and Effects to power your creative AI workflow.</p>
+                        <Link href="/marketplace" className="accent-button !py-4 !px-12 text-[10px] font-black uppercase tracking-[0.3em]">Explore Marketplace</Link>
                     </div>
                 )}
             </div>

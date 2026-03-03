@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
         const file = formData.get('file') as File
         const title = formData.get('title') as string
         const category = formData.get('category') as string
+        const product_type = formData.get('product_type') as string || category
         const price = formData.get('price') as string
         const metadataStr = formData.get('metadata') as string
         const metadata = JSON.parse(metadataStr || '{}')
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
                 {
                     role: "user",
                     content: [
-                        { type: "text", text: "Analyze this product image for a digital marketplace. Provide a quality score from 1-100 based on composition, resolution, and aesthetic appeal. Return ONLY the number." },
+                        { type: "text", text: "Analyze this product image for a digital marketplace. Provide a quality score from 1-100 based on resolution and aesthetic appeal. Return ONLY the number." },
                         {
                             type: "image_url",
                             image_url: {
@@ -63,12 +64,13 @@ export async function POST(req: NextRequest) {
             seller_id: user.id,
             title,
             category,
+            product_type,
             price: parseFloat(price),
             metadata,
             master_file_path: masterFileKey,
             preview_urls: previewUrls,
             quality_score: qualityScore,
-            status: 'active' // For demo, normally 'pending_approval'
+            status: 'active'
         }).select().single()
 
         if (error) throw error

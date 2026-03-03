@@ -1,0 +1,13 @@
+import { RouterProvider } from "react-router";
+import { router } from "./routes";
+import { ThemeProvider } from "./components/ThemeProvider";
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <div className="min-h-screen bg-background text-foreground">
+        <RouterProvider router={router} />
+      </div>
+    </ThemeProvider>
+  );
+}
