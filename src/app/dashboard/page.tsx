@@ -19,7 +19,7 @@ import {
     DownloadCloud,
     ChevronRight,
     Filter,
-    ShieldCheck,
+    CheckCircle2,
     Sparkles
 } from "lucide-react"
 import Link from "next/link"
@@ -150,7 +150,7 @@ export default function DashboardPage() {
                                     <td className="px-6 py-5">
                                         {product.quality_score > 0 ? (
                                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/10 w-fit">
-                                                <ShieldCheck className="w-3 h-3 text-indigo-400" />
+                                                <CheckCircle2 className="w-3 h-3 text-indigo-400" />
                                                 <span className="text-[10px] font-black text-indigo-300">{product.quality_score}</span>
                                             </div>
                                         ) : (
