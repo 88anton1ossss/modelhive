@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Star, Download, ShieldCheck, ShoppingBag, Heart } from 'lucide-react'
+import { Star, Download, CheckCircle2, ShoppingBag, Heart } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn } from '@/utils/cn'
 
@@ -68,7 +68,7 @@ export function ProductCard({ product, className, onClick }: ProductCardProps) {
 
                 {/* Quality Indicator */}
                 <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 text-white">
-                    <ShieldCheck className="w-3 h-3 text-indigo-400" />
+                    <CheckCircle2 className="w-3 h-3 text-indigo-400" />
                     <span className="text-[10px] font-black">{product.quality_score || 'N/A'}</span>
                 </div>
 

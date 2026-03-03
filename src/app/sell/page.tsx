@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Upload, CheckCircle2, AlertCircle, Camera, Layers, Zap, Code, ChevronRight, Loader2, ExternalLink, Info, Plus, Trash2, DollarSign, ToggleLeft, ToggleRight, ShieldCheck } from "lucide-react"
+import { Upload, CheckCircle2, AlertCircle, Camera, Layers, Zap, Code, ChevronRight, Loader2, ExternalLink, Info, Plus, Trash2, DollarSign, ToggleLeft, ToggleRight } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { cn } from "@/utils/cn"
 
@@ -231,7 +231,7 @@ export default function SellPage() {
 
                             <div className="space-y-6">
                                 <h3 className="text-[10px] font-black uppercase text-white/20 tracking-[0.2em] flex items-center gap-2">
-                                    <ShieldCheck className="w-4 h-4" /> License Pricing (USD)
+                                    <CheckCircle2 className="w-4 h-4" /> License Pricing (USD)
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">

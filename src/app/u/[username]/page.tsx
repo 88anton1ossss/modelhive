@@ -13,7 +13,6 @@ import {
     ArrowUpRight,
     ShoppingBag,
     Star,
-    ShieldCheck,
     CheckCircle2,
     Plus
 } from "lucide-react"
@@ -128,7 +127,7 @@ export default function ProfilePage({ params }: { params: { username: string } }
                         </div>
                         {profile.role === 'seller' && (
                             <div className="absolute -bottom-1 -right-1 bg-indigo-500 rounded-full p-2 border-4 border-[#060606] shadow-xl">
-                                <ShieldCheck className="w-5 h-5 text-white" />
+                                <CheckCircle2 className="w-5 h-5 text-white" />
                             </div>
                         )}
                     </div>

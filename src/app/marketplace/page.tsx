@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/client"
 import { useState, useEffect } from "react"
-import { Grid, List, SlidersHorizontal, Sparkles, SortDesc, X, ShoppingCart, User, Star, Download, ShieldCheck, Heart } from "lucide-react"
+import { Grid, List, SlidersHorizontal, Sparkles, SortDesc, X, ShoppingCart, User, Star, Download, CheckCircle2, Heart } from "lucide-react"
 import { ProductCard } from "@/components/product/ProductCard"
 import { cn } from "@/utils/cn"
 import { WorkspaceInspector } from "@/components/layout/WorkspaceInspector"
@@ -243,7 +243,7 @@ function ExpandedCard({ product, onClose }: { product: any, onClose: () => void 
                             <div>
                                 <h4 className="text-[10px] font-black uppercase text-white/20 tracking-widest mb-3">Quality Score</h4>
                                 <div className="flex items-center gap-1.5">
-                                    <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
                                     <span className="text-xs font-black text-indigo-300">{product.quality_score}</span>
                                 </div>
                             </div>
