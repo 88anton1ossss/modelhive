@@ -28,84 +28,69 @@ INSERT INTO public.products (
   id, 
   seller_id, 
   title, 
-  description, 
   price, 
-  is_pwyw, 
   product_type, 
   license_type, 
   category, 
   status, 
   preview_urls, 
   metadata,
-  quality_score,
-  base_model
+  quality_score
 )
 VALUES 
   -- Product 1: Cinematic Portrait LoRA
   ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', 
    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 
    'Cinematic Portrait Pro', 
-   'A highly optimized LoRA for SDXL that produces stunning cinematic portraits with natural skin textures and dramatic lighting.', 
    24.99, 
-   false, 
    'model', 
    'personal', 
    'SDXL', 
    'active', 
    '{"https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=1200"}', 
-   '{"base_model": "SDXL", "type": "LoRA", "steps": 2500, "trigger_words": ["cinematic_portrait"]}',
-   9.8,
-   'SDXL'
+   '{"base_model": "SDXL", "type": "LoRA", "steps": 2500, "trigger_words": ["cinematic_portrait"], "pwyw": false, "description": "A highly optimized LoRA for SDXL for stunning cinematic portraits."}',
+   98
   ),
 
   -- Product 2: Architectural Render Flux Model
   ('e1ffbc99-9c0b-4ef8-bb6d-6bb9bd380a55', 
    'b1ffbc99-9c0b-4ef8-bb6d-6bb9bd380a22', 
    'Architectural Render LoRA', 
-   'Professional architectural renders for Flux.1 [dev].', 
    19.99, 
-   true, 
    'model', 
    'commercial', 
    'Flux', 
    'active', 
    '{"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200"}', 
-   '{"base_model": "Flux.1 [dev]", "type": "LoRA", "steps": 3000}',
-   9.5,
-   'Flux'
+   '{"base_model": "Flux.1 [dev]", "type": "LoRA", "steps": 3000, "pwyw": true, "description": "Professional architectural renders for Flux.1 [dev]."}',
+   95
   ),
 
   -- Product 3: Fashion Dataset 2024
   ('f2eedc99-9c0b-4ef8-bb6d-6bb9bd380a66', 
    'c2eedc99-9c0b-4ef8-bb6d-6bb9bd380a33', 
    'Fashion Dataset 2024', 
-   '500+ high-resolution editorial fashion images.', 
    49.99, 
-   false, 
    'dataset', 
    'extended', 
    'Dataset', 
    'active', 
    '{"https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=1200"}', 
-   '{"image_count": 520, "max_resolution": "4K"}',
-   8.9,
-   'Dataset'
+   '{"image_count": 520, "max_resolution": "4K", "pwyw": false, "description": "500+ high-resolution editorial fashion images."}',
+   89
   ),
 
   -- Product 4: CyberPunk Aesthetic LoRA
   ('03eedc99-9c0b-4ef8-bb6d-6bb9bd380a77', 
    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 
    'CyberPunk Portrait LoRA', 
-   'Neon lights and futuristic fashion aesthetics.', 
    29.00, 
-   false, 
    'model', 
    'commercial', 
    'SDXL', 
    'active', 
    '{"https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=1200"}', 
-   '{"base_model": "SDXL", "type": "LoRA"}',
-   9.2,
-   'SDXL'
+   '{"base_model": "SDXL", "type": "LoRA", "pwyw": false, "description": "Neon lights and futuristic fashion aesthetics."}',
+   92
   )
 ON CONFLICT (id) DO NOTHING;
