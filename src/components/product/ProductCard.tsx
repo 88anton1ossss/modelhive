@@ -113,7 +113,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
                         <span className="text-[10px] text-white/20 uppercase tracking-widest font-black">Investment</span>
                         <div className="flex items-baseline gap-1">
                             <span className="text-2xl font-black text-white leading-none">${product.price}</span>
-                            {product.is_pwyw && <span className="text-[10px] font-black text-indigo-400">+</span>}
+                            {metadata.pwyw && <span className="text-[10px] font-black text-indigo-400">+</span>}
                         </div>
                     </div>
 
