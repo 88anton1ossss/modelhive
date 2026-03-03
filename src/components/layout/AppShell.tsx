@@ -45,11 +45,9 @@ export function AppShell({ children, inspector }: AppShellProps) {
             </main>
 
             {/* Optional Inspector: Grid Area 3 */}
-            {inspector && (
-                <aside className="app-inspector border-l border-white/5 bg-black/40 backdrop-blur-3xl overflow-y-auto p-6 hidden lg:block">
-                    {inspector}
-                </aside>
-            )}
+            <aside id="inspector-content" className="app-inspector border-l border-white/5 bg-black/40 backdrop-blur-3xl overflow-y-auto p-6 hidden lg:block">
+                {inspector}
+            </aside>
 
             {/* Mobile Navigation */}
             <MobileNav />

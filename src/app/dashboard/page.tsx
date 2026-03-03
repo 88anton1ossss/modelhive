@@ -105,6 +105,7 @@ export default function DashboardPage() {
                         <thead>
                             <tr className="bg-white/[0.01]">
                                 <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-white/20 font-black">Asset Details</th>
+                                <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-white/20 font-black">Type</th>
                                 <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-white/20 font-black">Price</th>
                                 <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-white/20 font-black">Sales</th>
                                 <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-white/20 font-black">Quality</th>
@@ -127,9 +128,14 @@ export default function DashboardPage() {
                                                 )}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors">{product.title}</span>
-                                                <span className="text-[10px] text-white/20 uppercase tracking-widest font-bold">{product.category} &bull; v1.0</span>
+                                                <span className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors uppercase tracking-tight">{product.title}</span>
+                                                <span className="text-[10px] text-white/20 uppercase tracking-widest font-bold">v1.0 &bull; {new Date(product.created_at).toLocaleDateString()}</span>
                                             </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-5">
+                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/5 border border-white/5 w-fit">
+                                            <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">{product.product_type || product.category}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-5">
@@ -204,10 +210,10 @@ export default function DashboardPage() {
                                     <div className="h-full bg-indigo-500 w-2/3" />
                                 </div>
                             </div>
-                            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5">
+                            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-indigo-500/30 transition-all cursor-pointer group">
                                 <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">Followers</p>
-                                <p className="text-xl font-black text-white">{profile?.follower_count || 0}</p>
-                                <p className="text-[9px] font-black text-indigo-400 mt-2 uppercase tracking-tighter">Engagement High</p>
+                                <p className="text-xl font-black text-white group-hover:text-indigo-400 transition-colors">{profile?.follower_count || 0}</p>
+                                <p className="text-[9px] font-black text-indigo-400 mt-2 uppercase tracking-tighter">Growth Active</p>
                             </div>
                         </div>
                     </div>
@@ -216,10 +222,20 @@ export default function DashboardPage() {
                 <section>
                     <h3 className="inspector-label mb-6">Quick Actions</h3>
                     <div className="flex flex-col gap-2">
-                        <ActionButton icon={<Edit3 className="w-4 h-4" />} label="Edit Profile" />
+                        <ActionButton
+                            icon={<Eye className="w-4 h-4" />}
+                            label="View Public Profile"
+                            href={`/u/${profile?.username || profile?.id}`}
+                        />
+                        <ActionButton icon={<Edit3 className="w-4 h-4" />} label="Edit Studio" />
                         <ActionButton icon={<DownloadCloud className="w-4 h-4" />} label="Import Civitai" href="/sell?import=civitai" />
-                        <ActionButton icon={<Share2 className="w-4 h-4" />} label="Copy Shop URL" />
-                        <ActionButton icon={<Clock className="w-4 h-4" />} label="Payout Settings" />
+                        <ActionButton
+                            icon={<Share2 className="w-4 h-4" />}
+                            label="Copy Shop URL"
+                            onClick={() => {
+                                navigator.clipboard.writeText(`${window.location.origin}/u/${profile?.username || profile?.id}`)
+                            }}
+                        />
                     </div>
                 </section>
             </WorkspaceInspector>
@@ -227,7 +243,7 @@ export default function DashboardPage() {
     )
 }
 
-function ActionButton({ icon, label, href }: { icon: React.ReactNode, label: string, href?: string }) {
+function ActionButton({ icon, label, href, onClick }: { icon: React.ReactNode, label: string, href?: string, onClick?: () => void }) {
     const content = (
         <div className="w-full p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/5 hover:border-white/10 flex items-center gap-4 transition-all group">
             <div className="text-white/30 group-hover:text-indigo-400 transition-colors">{icon}</div>
@@ -237,5 +253,5 @@ function ActionButton({ icon, label, href }: { icon: React.ReactNode, label: str
     )
 
     if (href) return <Link href={href}>{content}</Link>
-    return <button className="w-full text-left">{content}</button>
+    return <button onClick={onClick} className="w-full text-left">{content}</button>
 }

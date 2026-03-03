@@ -2,16 +2,17 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Star, Download, ShieldCheck, ShoppingBag } from 'lucide-react'
+import { Star, Download, ShieldCheck, ShoppingBag, Heart } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn } from '@/utils/cn'
 
 interface ProductCardProps {
     product: any
     className?: string
+    onClick?: () => void
 }
 
-export function ProductCard({ product, className }: ProductCardProps) {
+export function ProductCard({ product, className, onClick }: ProductCardProps) {
     const metadata = product.metadata || {}
 
     // Random gradient for each card for some visual flair on hover or fallback
@@ -26,14 +27,15 @@ export function ProductCard({ product, className }: ProductCardProps) {
     return (
         <motion.div
             whileHover={{ y: -6 }}
+            onClick={onClick}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className={cn(
-                "group relative flex flex-col bg-card border border-white/5 rounded-3xl overflow-hidden hover:border-indigo-500/40 hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] transition-all duration-500",
+                "group relative flex flex-col bg-card border border-white/5 rounded-3xl overflow-hidden hover:border-indigo-500/40 hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] transition-all duration-500 cursor-pointer",
                 className
             )}
         >
             {/* 1. Image Container (4:5 Aspect Ratio) */}
-            <Link href={`/products/${product.id}`} className="relative aspect-[4/5] overflow-hidden bg-white/[0.02]">
+            <div className="relative aspect-[4/5] overflow-hidden bg-white/[0.02]">
                 {product.preview_urls?.[0] ? (
                     <img
                         src={product.preview_urls[0]}
@@ -54,14 +56,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
                 {/* Floating Badges */}
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                    <span className="px-2.5 py-1 rounded-full bg-indigo-500/80 backdrop-blur-xl text-[9px] font-black uppercase tracking-[0.15em] text-white">
+                        {product.product_type || product.category || 'Asset'}
+                    </span>
                     {metadata.base_model && (
                         <span className="px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 text-[9px] font-black uppercase tracking-[0.15em] text-white">
                             {metadata.base_model}
-                        </span>
-                    )}
-                    {product.nsfw_flag && (
-                        <span className="px-2.5 py-1 rounded-full bg-red-500/80 backdrop-blur-xl text-[9px] font-black uppercase tracking-[0.15em] text-white">
-                            NSFW
                         </span>
                     )}
                 </div>
@@ -90,39 +90,49 @@ export function ProductCard({ product, className }: ProductCardProps) {
                         <span className="text-[10px] font-black text-white/60">{product.download_count || 0}</span>
                     </div>
                 </div>
-            </Link>
+
+                {/* Heart Icon (Favorite) */}
+                <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                    <button className="p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 hover:bg-red-500/20 hover:border-red-500/40 transition-colors">
+                        <Heart className="w-3.5 h-3.5 text-white" />
+                    </button>
+                </div>
+            </div>
 
             {/* 2. Content */}
             <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-center gap-2 mb-3">
                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
                     <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">
-                        {product.type || product.category?.replace('_', ' ') || 'Asset'}
+                        {product.product_type || product.category?.replace('_', ' ') || 'Asset'}
                     </span>
                 </div>
 
-                <Link href={`/products/${product.id}`} className="flex-1">
+                <div className="flex-1">
                     <h3 className="text-lg font-bold text-white group-hover:indigo-gradient transition-all duration-300 line-clamp-2 leading-tight mb-3">
                         {product.title}
                     </h3>
-                </Link>
+                </div>
 
                 {/* 3. Footer / Price / Creator */}
                 <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
                     <div className="flex flex-col">
                         <span className="text-[10px] text-white/20 uppercase tracking-widest font-black">Investment</span>
                         <div className="flex items-baseline gap-1">
+                            <span className="text-sm text-white/40 font-bold">from</span>
                             <span className="text-2xl font-black text-white leading-none">${product.price}</span>
                             {metadata.pwyw && <span className="text-[10px] font-black text-indigo-400">+</span>}
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2 group/creator">
-                        <div className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center overflow-hidden">
+                        <div className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center overflow-hidden shadow-inner">
                             {product.seller_profile?.avatar_url ? (
                                 <img src={product.seller_profile.avatar_url} className="w-full h-full object-cover" />
                             ) : (
-                                <div className={cn("w-full h-full bg-gradient-to-br", gradient)} />
+                                <div className={cn("w-full h-full bg-gradient-to-br text-[10px] flex items-center justify-center font-black text-white/40", gradient)}>
+                                    {product.seller_profile?.full_name?.[0] || '?'}
+                                </div>
                             )}
                         </div>
                     </div>
