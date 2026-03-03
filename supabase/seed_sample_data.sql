@@ -49,7 +49,7 @@ VALUES
    'active', 
    '{"https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=1200"}', 
    '{"base_model": "SDXL", "type": "LoRA", "steps": 2500, "trigger_words": ["cinematic_portrait"], "pwyw": false, "description": "A highly optimized LoRA for SDXL for stunning cinematic portraits."}',
-   98
+   9.8
   ),
 
   -- Product 2: Architectural Render Flux Model
@@ -63,7 +63,7 @@ VALUES
    'active', 
    '{"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200"}', 
    '{"base_model": "Flux.1 [dev]", "type": "LoRA", "steps": 3000, "pwyw": true, "description": "Professional architectural renders for Flux.1 [dev]."}',
-   95
+   9.5
   ),
 
   -- Product 3: Fashion Dataset 2024
@@ -77,7 +77,7 @@ VALUES
    'active', 
    '{"https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=1200"}', 
    '{"image_count": 520, "max_resolution": "4K", "pwyw": false, "description": "500+ high-resolution editorial fashion images."}',
-   89
+   8.9
   ),
 
   -- Product 4: CyberPunk Aesthetic LoRA
@@ -91,6 +91,6 @@ VALUES
    'active', 
    '{"https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=1200"}', 
    '{"base_model": "SDXL", "type": "LoRA", "pwyw": false, "description": "Neon lights and futuristic fashion aesthetics."}',
-   92
+   9.2
   )
 ON CONFLICT (id) DO NOTHING;
