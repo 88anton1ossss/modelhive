@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Zap } from 'lucide-react'
+import { Zap, Shield } from 'lucide-react'
 
 export function Navbar() {
     return (
@@ -20,6 +20,9 @@ export function Navbar() {
                 <Link href="/marketplace" className="hover:text-white transition-colors">Browse</Link>
                 <Link href="/sell" className="hover:text-white transition-colors">Sell</Link>
                 <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
+                <Link href="/hive" className="text-violet-400/80 hover:text-violet-400 transition-colors font-semibold flex items-center gap-1.5">
+                    <Shield className="w-3.5 h-3.5" />HiveMark
+                </Link>
                 <Link href="/civitai-alternative" className="text-indigo-400/80 hover:text-indigo-400 transition-colors font-semibold">vs Civitai</Link>
             </div>
 

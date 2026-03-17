@@ -10,7 +10,8 @@ import {
     Zap,
     Search,
     Settings,
-    CircleUser
+    CircleUser,
+    Shield
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { motion } from 'framer-motion'
@@ -20,6 +21,8 @@ const navItems = [
     { icon: Layout, label: 'My Studio', href: '/dashboard' },
     { icon: Library, label: 'Library', href: '/dashboard/buyer' },
 ]
+
+const hiveItem = { icon: Shield, label: 'HiveMark', href: '/hive' }
 
 export function LeftNav() {
     const pathname = usePathname()
@@ -67,6 +70,24 @@ export function LeftNav() {
                         </Link>
                     )
                 })}
+
+                {/* Divider */}
+                <div className="w-8 h-px bg-white/5 mx-auto" />
+
+                {/* HiveMark */}
+                <Link href={hiveItem.href} className="relative group">
+                    <div className={cn(
+                        "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300",
+                        pathname === hiveItem.href
+                            ? "bg-violet-500/15 text-violet-400 shadow-[inset_0_0_0_1px_rgba(139,92,246,0.3)]"
+                            : "text-white/30 hover:text-violet-400 hover:bg-violet-500/5"
+                    )}>
+                        <hiveItem.icon className="w-5 h-5" />
+                    </div>
+                    <div className="absolute left-16 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg bg-violet-500 text-white text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 translate-x-2 group-hover:translate-x-0 z-50">
+                        {hiveItem.label}
+                    </div>
+                </Link>
             </nav>
 
             {/* Footer Nav */}

@@ -7,6 +7,7 @@ const STATIC_ROUTES = [
     '/',
     '/marketplace',
     '/pricing',
+    '/hive',
     '/civitai-alternative',
     '/lora-marketplace',
     '/photo-dataset-marketplace',

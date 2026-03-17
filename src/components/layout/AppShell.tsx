@@ -17,7 +17,7 @@ export function AppShell({ children, inspector }: AppShellProps) {
     const pathname = usePathname()
 
     // Define routes that shouldn't use the full workspace layout
-    const isMarketingPage = pathname === '/' || pathname.startsWith('/login') || pathname.startsWith('/signup')
+    const isMarketingPage = pathname === '/' || pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/hive')
 
     if (isMarketingPage) {
         return (
